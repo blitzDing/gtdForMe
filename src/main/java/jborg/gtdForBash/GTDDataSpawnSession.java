@@ -937,9 +937,11 @@ public class GTDDataSpawnSession
 		if(wantChangeTDTQuestion)tdt = iss.forcedDateTimeInOneLine(prjctWhenTDTR, lastAction, jetzt);
 
 		String dldtStr = pJson.getString(ProjectJSONKeyz.DLDTKey);
-		LocalDateTime dldt = LittleTimeTools.LDTfromTimeString(dldtStr);
+		
+		LocalDateTime dldt;
 		if(dldtStr.equals(prjctDeadlineNone))dldt = farInFuture;
-
+		else dldt = LittleTimeTools.LDTfromTimeString(dldtStr);
+		
 		if(tdt.isAfter(dldt))
 		{
 			System.out.println(prjctTDTAfterDLDTMsg);
