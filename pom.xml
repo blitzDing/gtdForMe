@@ -96,6 +96,13 @@
 				<configuration>
 					<mainClass>jborg.gtdForBash.GTDCLI</mainClass>
 				</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>java</goal>
+							</goals>
+						</execution>
+					</executions>
 			</plugin>
 		
 	      </plugins>

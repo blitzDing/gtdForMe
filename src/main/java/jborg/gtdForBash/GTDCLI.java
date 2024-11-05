@@ -277,8 +277,6 @@ public class GTDCLI implements Beholder<String>
 
     public static Set<JSONObject> loadProjects() throws IOException, URISyntaxException
     {
-
-    	Set<JSONObject> prjctSet = new HashSet<>();
     	
     	String path = getPathToDataFolder();
     	

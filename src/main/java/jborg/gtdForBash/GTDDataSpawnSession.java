@@ -62,8 +62,8 @@ public class GTDDataSpawnSession
 	/** First Step Deadline Max. Prefix.*/
 	public static final String stpDLDTHintMid = " and Project Deadline: ";
 	
-	/** Later than First Step Deadline Min. Prefix.*/
-	public static final String extrStpDLDTHintPrefix = "Deadline must be between old-Step TDT: ";
+	/** Later than Now Deadline Min. Prefix.*/
+	public static final String nowPrefix = "Now: ";
 	/** Later than First Step Deadline Max. Prefix.*/
 	public static final String extrStpDLDTHintMid = " and Project Deadline: ";
 	
@@ -515,10 +515,10 @@ public class GTDDataSpawnSession
 			else //iss got other parameters
 			{
 				System.out.println("");
-				String oldStepTDT = oldStep.getString(StepJSONKeyz.TDTKey);
-				System.out.println(extrStpDLDTHintPrefix + oldStepTDT + extrStpDLDTHintMid + prjctDeadLine);
-				LocalDateTime ldtOldStepTDT = LittleTimeTools.LDTfromTimeString(oldStepTDT);
-				LocalDateTime deadLineLDT = iss.forcedDateTimeInOneLine(stepDeadlineR, ldtOldStepTDT, prjctDLDTYear);
+				LocalDateTime minLDT = LocalDateTime.now();
+				String minStr = LittleTimeTools.timeString(minLDT);
+				System.out.println(nowPrefix + minStr + extrStpDLDTHintMid + prjctDeadLine);
+				LocalDateTime deadLineLDT = iss.forcedDateTimeInOneLine(stepDeadlineR, minLDT, prjctDLDTYear);
 				deadLineStr = LittleTimeTools.timeString(deadLineLDT);
 			}
 		}
