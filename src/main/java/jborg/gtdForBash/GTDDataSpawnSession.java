@@ -938,7 +938,8 @@ public class GTDDataSpawnSession
 
 		String dldtStr = pJson.getString(ProjectJSONKeyz.DLDTKey);
 		LocalDateTime dldt = LittleTimeTools.LDTfromTimeString(dldtStr);
-				
+		if(dldtStr.equals(prjctDeadlineNone))dldt = farInFuture;
+
 		if(tdt.isAfter(dldt))
 		{
 			System.out.println(prjctTDTAfterDLDTMsg);
