@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import jborg.gtdForBash.DBIssues.DBSink;
 
-class DBTestGetQuery {
+public class DBTestGetQuery
+{
 
 	@Test
 	void test() throws SQLException

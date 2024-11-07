@@ -21,13 +21,14 @@ import org.junit.jupiter.api.Test;
 
 import allgemein.LittleTimeTools;
 
+import consoleTools.BashSigns;
 import consoleTools.InputArgumentException;
 import consoleTools.InputStreamSession;
 
 import someMath.NaturalNumberException;
 
 
-class TestingCLI
+public class TestingCLI
 {
 
 	//Remember: the '\n' are gone!!!
@@ -40,6 +41,9 @@ class TestingCLI
 	String appendStpPrjctName = "Append_Step_Project";
 	
 	String killStepPrjctName = "Kill_Step_Project";
+	
+	String killPrjctNameNoDLDT = "Kill_Project_NODLDT";
+	String killPrjctName = "Kill_Project";
 	
 	String modPrjctName = "MOD_Project";
 	String modPrjctGoal = "MOD-Project Test";
@@ -75,7 +79,7 @@ class TestingCLI
     	}
 	}
 
-	public String nxtStpSequenz(String prjctName)
+	private String sequenzNXTStep(String prjctName)
 	{
 
 		String changeStepBDT = "No";
@@ -93,7 +97,7 @@ class TestingCLI
 		return data;
 	}
 	
-	public String killStepSequenz(String prjctName)
+	private String sequenzKillStep(String prjctName)
 	{
 	
 		String stepWasSuccessQstn  = "No";
@@ -108,7 +112,7 @@ class TestingCLI
 		return data;
 	}
 
-	public String newProjectSequenz(String prjctName)
+	private String sequenzNewProject(String prjctName)
 	{
 		
 		String changePrjctBDT = "No";
@@ -133,7 +137,8 @@ class TestingCLI
 		return data;
 	}
 
-	public String newProjectSequenzNoDLDT(String prjctName)
+
+	private String sequenzNewProjectNoDLDT(String prjctName)
 	{
 		
 		String changePrjctBDT = "No";
@@ -154,7 +159,7 @@ class TestingCLI
 		return data;
 	}
 
-	public String modProjectSequenz(String prjctName)
+	private String sequenzMODProject(String prjctName)
 	{
 		
 		String changePrjctBDT = "No";
@@ -167,7 +172,7 @@ class TestingCLI
 		return data;
 	}
 	
-	public String addNoteSequenz(String prjctName)
+	private String sequenzAddNote(String prjctName)
 	{
 
 		String data = SomeCommands.add_Note + " " + prjctName + '\n'
@@ -178,9 +183,9 @@ class TestingCLI
 		return data;
 	}
 	
-	public String wakeMODProjectSequenz(String prjctName)
+	private String sequenzWakeMODProject(String prjctName)
 	{
-		
+
 		String prjctDLDTStr = translateTimeToAnswerString(prjctDLDT);
 		String changeStepBDT = "No";
 		String chosenFromStatieList = "1";
@@ -195,17 +200,17 @@ class TestingCLI
 					+ stepDesc3 + '\n'
 					+ dldtQuestion + '\n'
 					+ stepDLDTStr;
-		
+
 		return data;
 	}
 
 	@Test
 	public void testNewPrjct() throws JSONException, IOException, URISyntaxException, NaturalNumberException
 	{
-		
-		String data = newProjectSequenz(newPrjctName);
+
+		String data = sequenzNewProject(newPrjctName);
 		data = data + SomeCommands.exit + '\n';
-		
+
 		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
 		InputStreamSession iss = new InputStreamSession(bais);
 
@@ -261,8 +266,8 @@ class TestingCLI
 	@Test
 	public void testWakeMOD() throws JSONException, IOException, URISyntaxException, NaturalNumberException
 	{
-		String data = modProjectSequenz(wakeProjectName);
-		data = data + wakeMODProjectSequenz(wakeProjectName);
+		String data = sequenzMODProject(wakeProjectName);
+		data = data + sequenzWakeMODProject(wakeProjectName);
 		data = data + SomeCommands.exit + '\n';
 		
 		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
@@ -286,7 +291,7 @@ class TestingCLI
 	public void testNewMODProject() throws JSONException, IOException, URISyntaxException, NaturalNumberException
 	{
 
-		String data = modProjectSequenz(modPrjctName);
+		String data = sequenzMODProject(modPrjctName);
 		data = data + SomeCommands.exit + '\n';
 		
 		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
@@ -305,8 +310,8 @@ class TestingCLI
 	public void testAddNoteToProject() throws JSONException, IOException, URISyntaxException, NaturalNumberException
 	{
 				
-		String data = newProjectSequenz(addNotePrjctName);
-		data = data + addNoteSequenz(addNotePrjctName);
+		String data = sequenzNewProject(addNotePrjctName);
+		data = data + sequenzAddNote(addNotePrjctName);
 		data = data + SomeCommands.exit + '\n';
 		
 		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
@@ -326,13 +331,92 @@ class TestingCLI
 		assert(note2.equals(this.noticeTwo));
 		
 	}
+
+	@Test
+	public void testKillProjectWithNoDLDT() throws JSONException, IOException, URISyntaxException, NaturalNumberException
+	{
+
+		String data = sequenzNewProjectNoDLDT(killPrjctNameNoDLDT);
+		data = data + sequenzKillStep(killPrjctNameNoDLDT);
+		data = data + sequenzKillProject(killPrjctNameNoDLDT);
+		data = data + SomeCommands.exit + "\n";
+		
+		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
+		InputStreamSession iss = new InputStreamSession(bais);
+
+		gtdCli = new GTDCLI(iss);
+		
+		Set<JSONObject> projects = GTDCLI.loadProjects();
+		
+
+		JSONObject project = pickProjectByName(killPrjctNameNoDLDT, projects);
+		assert(project!=null);
+		
+		JSONObject step = SomeCommands.getLastStep(project);
+		StatusMGMT statusMGMT = StatusMGMT.getInstance();
+		Set<String> terminalSet = statusMGMT.getStatesOfASet(StatusMGMT.terminalSetName);
+		
+		String stepStatus = step.getString(StepJSONKeyz.statusKey);
+		
+		System.out.println(BashSigns.boldRBCPX+stepStatus+BashSigns.boldRBCSX);
+		assert(terminalSet.contains(stepStatus));
+
+		assert(terminalSet.contains(project.get(ProjectJSONKeyz.statusKey)));
+	}
 	
+	@Test
+	public void testKillProject() throws JSONException, IOException, URISyntaxException, NaturalNumberException
+	{
+
+		String data = sequenzNewProject(killPrjctName);
+		data = data + sequenzKillStep(killPrjctName);
+		data = data + sequenzKillProject(killPrjctName);
+		data = data + SomeCommands.exit + "\n";
+		
+		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
+		InputStreamSession iss = new InputStreamSession(bais);
+
+		gtdCli = new GTDCLI(iss);
+		
+		Set<JSONObject> projects = GTDCLI.loadProjects();
+		
+
+		JSONObject project = pickProjectByName(killPrjctName, projects);
+		assert(project!=null);
+		
+		JSONObject step = SomeCommands.getLastStep(project);
+		StatusMGMT statusMGMT = StatusMGMT.getInstance();
+		Set<String> terminalSet = statusMGMT.getStatesOfASet(StatusMGMT.terminalSetName);
+		
+		String stepStatus = step.getString(StepJSONKeyz.statusKey);
+		
+		System.out.println(BashSigns.boldRBCPX+stepStatus+BashSigns.boldRBCSX);
+		assert(terminalSet.contains(stepStatus));
+
+		assert(terminalSet.contains(project.get(ProjectJSONKeyz.statusKey)));
+	}
+	
+	private String sequenzKillProject(String prjctName)
+	{
+
+		String projectWasSuccessQstn  = "No";
+		String wantToMakeTDTNote = "No";
+		String wantToChangeTDT = "No";
+
+		String data = SomeCommands.terminate_Project + " " + prjctName + '\n'
+				+ projectWasSuccessQstn + '\n'
+				+ wantToMakeTDTNote + '\n'
+				+ wantToChangeTDT + '\n';
+
+		return data;
+	}
+
 	@Test
 	public void testKillStep() throws JSONException, IOException, URISyntaxException, NaturalNumberException
 	{
 		
-		String data = newProjectSequenz(killStepPrjctName);
-		data = data + killStepSequenz(killStepPrjctName);
+		String data = sequenzNewProject(killStepPrjctName);
+		data = data + sequenzKillStep(killStepPrjctName);
 		data = data + SomeCommands.exit + '\n';
 		
 		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
@@ -357,9 +441,9 @@ class TestingCLI
 	public void testNextStep() throws JSONException, IOException, URISyntaxException, NaturalNumberException
 	{
 		
-		String data = newProjectSequenz(appendStpPrjctName);
-		data = data + killStepSequenz(appendStpPrjctName);
-		data = data + nxtStpSequenz(appendStpPrjctName);
+		String data = sequenzNewProject(appendStpPrjctName);
+		data = data + sequenzKillStep(appendStpPrjctName);
+		data = data + sequenzNXTStep(appendStpPrjctName);
 		data = data + SomeCommands.exit + '\n';
 		System.out.println(data);
 		
@@ -398,7 +482,7 @@ class TestingCLI
 	public void testNewProjectWithoutDeadline() throws JSONException, IOException, URISyntaxException, NaturalNumberException
 	{
 		
-		String data = newProjectSequenzNoDLDT(newPrjctNoDLDT);
+		String data = sequenzNewProjectNoDLDT(newPrjctNoDLDT);
 		data = data + SomeCommands.exit + '\n';
 		
 		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
@@ -450,7 +534,7 @@ class TestingCLI
 		assert(stepDesc.equals(this.stepDesc));
 	}
 	
-	public String translateTimeToAnswerString(LocalDateTime ldt)
+	private String translateTimeToAnswerString(LocalDateTime ldt)
 	{
 		int day = ldt.getDayOfMonth();
 		String dayStr = "" + day;
@@ -487,7 +571,7 @@ class TestingCLI
 
 	}
 	
-	public JSONObject pickProjectByName(String pName, Set<JSONObject> projects)
+	private JSONObject pickProjectByName(String pName, Set<JSONObject> projects)
 	{
 
 		for(JSONObject pJSON: projects)
